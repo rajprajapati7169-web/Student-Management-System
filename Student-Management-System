@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Management System</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #eef2f7;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        button {
+            padding: 8px;
+            margin: 2px;
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        table {
+            margin: auto;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Student Management System</h2>
+
+<form id="form">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="number" id="age" placeholder="Age" required>
+    <input type="text" id="course" placeholder="Course" required>
+    <button>Add</button>
+</form>
+
+<input type="text" id="search" placeholder="Search by name" onkeyup="searchStudent()">
+
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>sem</th>
+            <th>Course</th>
+            <th>Action</th>
+            
+        </tr>
+    </thead>
+    <tbody id="list"></tbody>
+</table>
+
+<script>
+// Load data
+let students = JSON.parse(localStorage.getItem("students")) || [];
+
+// Add student
+document.getElementById("form").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    let student = {
+        name: name.value,
+        age: age.value,
+        course: course.value
+    };
+
+    students.push(student);
+    save();
+    display();
+    form.reset();
+});
+
+// Save to localStorage
+function save(){
+    localStorage.setItem("students", JSON.stringify(students));
+}
+
+// Display students
+function display(data = students){
+    let html = "";
+    data.forEach((s, i) => {
+        html += `
+        <tr>
+            <td>${s.name}</td>
+            <td>${s.age}</td>
+            <td>${s.course}</td>
+            <td>
+                <button onclick="edit(${i})">Edit</button>
+                <button onclick="del(${i})">Delete</button>
+            </td>
+        </tr>`;
+    });
+    list.innerHTML = html;
+}
+
+// Delete
+function del(i){
+    students.splice(i,1);
+    save();
+    display();
+}
+
+// Edit
+function edit(i){
+    let s = students[i];
+    name.value = s.name;
+    age.value = s.age;
+    course.value = s.course;
+
+    students.splice(i,1);
+    save();
+    display();
+}
+
+// Search
+function searchStudent(){
+    let value = search.value.toLowerCase();
+    let filtered = students.filter(s => s.name.toLowerCase().includes(value));
+    display(filtered);
+}
+
+// Initial load
+display();
+</script>
+
+</body>
+</html>
